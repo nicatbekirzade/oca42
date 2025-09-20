@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthResponse {
 
-    public String accessToken;
-    public String refreshToken;
+    public String accessToken; //1 min //401 id/username + roles[]
+    public String refreshToken; //1 day //401 id/username +expire time is more than access token
 }

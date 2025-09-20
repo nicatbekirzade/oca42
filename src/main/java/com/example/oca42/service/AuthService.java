@@ -20,7 +20,6 @@ public class AuthService {
     //ProviderManager
     //AuthenticationProvider
 
-
     public AuthResponse authenticate(AuthRequest request) {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

@@ -2,11 +2,13 @@ package com.example.oca42.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,24 @@ public class GlobalExceptionHandler {
     private ResponseEntity<Map<String, Object>> ofType(WebRequest request, HttpStatus status, String message) {
         return ofType(request, status, message, null);
     }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        List<ConstraintsViolationError> validationErrors = new ArrayList<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+
+//                errors.put(error.getField(), error.getDefaultMessage())
+                validationErrors.add(new ConstraintsViolationError(error.getField(), error.getDefaultMessage()))
+
+        );
+
+
+        return ofType(request, HttpStatus.BAD_REQUEST, "Validation errors", validationErrors);
+    }
+
 
     private ResponseEntity<Map<String, Object>> ofType(WebRequest request, HttpStatus status, String message, List<ConstraintsViolationError> validationErrors) {
         Map<String, Object> attributes = new HashMap<>();

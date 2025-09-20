@@ -7,6 +7,7 @@ import com.example.oca42.model.UserUpdateRequestDto;
 import com.example.oca42.service.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -59,6 +60,7 @@ public class UserManagementController {
         return ResponseEntity.ok(userManagementService.getById(id));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @DeleteMapping("/contact/{id}")
     public void deleteContact(@PathVariable Long id) {
         userManagementService.deleteContact(id);

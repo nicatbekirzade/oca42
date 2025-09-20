@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,12 +15,7 @@ import java.util.stream.Collectors;
 public class JwtService {
 
     private static final String AUTHORITIES_KEY = "roles";
-    private final SecretKey secretKey;
-
-    public JwtService() {
-        // Use at least 256-bit secret key (Base64 encoded recommended)
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
+    private final String secretKey = "YS1zdHJpbmctc2VjcmV0LWF0LWxlYXN0LTI1Ni1iaXRzLWxvbmc=";
 
     /**
      * Generate JWT token with username and authorities
@@ -36,7 +32,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
-                .signWith(secretKey)
+                .signWith(getSecretKeySpec())
                 .compact();
     }
 
@@ -74,8 +70,14 @@ public class JwtService {
 
     private Jws<Claims> parseClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(getSecretKeySpec())
                 .build()
                 .parseSignedClaims(token);
+    }
+
+
+    public SecretKey getSecretKeySpec() {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 }
