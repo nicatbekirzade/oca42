@@ -1,5 +1,6 @@
 package com.example.oca42.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,9 +27,9 @@ public class GlobalExceptionHandler {
         return ofType(request, HttpStatus.CONFLICT, exception.getMessage());
     }
 
-    @ExceptionHandler({Throwable.class})
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(Throwable exception, WebRequest request) {
-        return ofType(request, HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+    @ExceptionHandler({ExpiredJwtException.class})
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(ExpiredJwtException exception, WebRequest request) {
+        return ofType(request, HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 
     private ResponseEntity<Map<String, Object>> ofType(WebRequest request, HttpStatus status, String message) {
@@ -42,12 +43,8 @@ public class GlobalExceptionHandler {
         List<ConstraintsViolationError> validationErrors = new ArrayList<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
-
-//                errors.put(error.getField(), error.getDefaultMessage())
                 validationErrors.add(new ConstraintsViolationError(error.getField(), error.getDefaultMessage()))
-
         );
-
 
         return ofType(request, HttpStatus.BAD_REQUEST, "Validation errors", validationErrors);
     }
