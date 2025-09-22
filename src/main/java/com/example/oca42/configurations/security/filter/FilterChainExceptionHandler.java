@@ -17,7 +17,6 @@ import java.io.IOException;
 @Component
 public class FilterChainExceptionHandler extends OncePerRequestFilter {
 
-
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
